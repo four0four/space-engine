@@ -38,8 +38,8 @@ int main(int argc, char *argv[])
     int backgroundx = 0;
     int backgroundy = 0;
 
-    test.loadFromFile("/home/galen/programming/devtest/vertexshader.vert",
-                      "/home/galen/programming/devtest/fragmentshader.frag");
+    test.loadFromFile(RESOURCES"vertexshader.vert",
+                      RESOURCES"fragmentshader.frag");
 
     test.compileShader();
     test.linkShader();
