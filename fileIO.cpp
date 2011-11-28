@@ -1,53 +1,6 @@
 #include "fileIO.h"
 
 
-unsigned int LoadTexture(std::string image)
-{
-    printf("INFO: Loading texture: %s\n",image.c_str());
-
-    unsigned int texture;
-    FREE_IMAGE_FORMAT format;
-
-    if((format = FreeImage_GetFileType(image.c_str(),0)) == -1)
-    {
-        printf("ERROR: Unable to load texture %s!.\n",image.c_str()); //Set some flag?
-        return -1;
-    }
-
-    FIBITMAP * imagedata = FreeImage_Load(format, image.c_str(),0);
-    imagedata = FreeImage_ConvertTo32Bits(imagedata);
-
-    int height = FreeImage_GetHeight(imagedata);
-    int width = FreeImage_GetWidth(imagedata);
-
-    GLubyte* pixels = new GLubyte[4*width*height];
-
-    GLubyte * pixelraw = FreeImage_GetBits(imagedata);
-
-    // FreeImage loads in BGR, so we need to flip the bytes - OpenGL is not playing nice...
-    for(int i = 0; i < width*height; i++)
-    {
-            pixels[i*4+0]= pixelraw[i*4+2];
-            pixels[i*4+1]= pixelraw[i*4+1];
-            pixels[i*4+2]= pixelraw[i*4+0];
-            pixels[i*4+3]= pixelraw[i*4+3];
-    }
-
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE,pixels);
-    glGenerateMipmap(GL_TEXTURE_2D); //Hmmm...
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-
-    // clean up a bit
-    delete[] pixels;
-    FreeImage_Unload(imagedata);
-
-    printf("- %s loaded\n",image.c_str());
-
-    return texture;
-}
 
 unsigned int textureList::loadTexture(std::string imagename)
 {
@@ -77,7 +30,8 @@ unsigned int textureList::loadTexture(std::string imagename)
         current = current->next;
 
     current->next = new textureNode;
-    if(strcmp(current->filename,"first")) //If the list is empty, use the anchor
+    //For now, leave the anchor alone
+//    if(strcmp(current->filename,"first")) //If the list is empty, use the anchor
         current = current->next;
     current->next = NULL;
     strcpy(current->filename,imagename.c_str());

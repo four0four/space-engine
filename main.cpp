@@ -1,3 +1,8 @@
+/*
+  DISCLAIMER: Anything in main.cpp is hackish and probably poor practice. This is not to say
+  that the other files are perfect, but main.cpp is simply a testing framework. It will
+  probably not work on your computer. In fact, it will probably break horribly.
+*/
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <GL/glew.h>
@@ -7,6 +12,8 @@
 #include "fileIO.h"
 #include "renderer.h"
 #include "shaders.h"
+
+#define RESOURCES "./resources/"
 
 bool program_running = 1;
 
@@ -25,9 +32,9 @@ int main(int argc, char *argv[])
     textureList *textures = new textureList;
 
     /* it's much faster to store these in seperate vars */
-    unsigned long tex = textures->loadTexture("/home/galen/programming/devtest/outline.png");
-    unsigned long tex2 = textures->loadTexture("/home/galen/programming/devtest/hubble1.jpg");
-    unsigned long tex3 = textures->loadTexture("/home/galen/programming/devtest/outline.png");
+    unsigned long tex = textures->loadTexture(RESOURCES"outline.png");
+    unsigned long tex2 = textures->loadTexture(RESOURCES"hubble1.jpg");
+    unsigned long tex3 = textures->loadTexture(RESOURCES"outline.png");
     int backgroundx = 0;
     int backgroundy = 0;
 
