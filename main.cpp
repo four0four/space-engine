@@ -9,11 +9,12 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glext.h>
+#include <unistd.h>
 #include "fileIO.h"
 #include "renderer.h"
 #include "shaders.h"
 
-#define RESOURCES "./resources/"
+#define RESOURCES "/resources/"
 
 bool program_running = 1;
 
@@ -28,27 +29,42 @@ int main(int argc, char *argv[])
 {
     sf::Window mainwin(sf::VideoMode(xres,yres,32),"devtest");
     gl_init();
+    mainwin.EnableVerticalSync(false);
 
     textureList *textures = new textureList;
 
+
+    /*
+      HACK ALERT!
+      move to init fxn (when created)
+    */
+    char *filepath;
+    std::string runningdir;
+    long size;
+    size = pathconf(".", _PC_PATH_MAX);
+    filepath = new char[size];
+    getcwd(filepath, (size_t)size);
+    runningdir = filepath;
+    delete [] filepath;
+    printf("LOG: launch dir: %s\n",runningdir.c_str());
+
     /* it's much faster to store these in seperate vars */
-    unsigned long tex = textures->loadTexture(RESOURCES"outline.png");
-    unsigned long tex2 = textures->loadTexture(RESOURCES"hubble1.jpg");
-    unsigned long tex3 = textures->loadTexture(RESOURCES"outline.png");
+    unsigned long tex = textures->loadTexture(runningdir + RESOURCES"outline.png");
+    unsigned long tex2 = textures->loadTexture(runningdir + RESOURCES"hubble1.jpg");
+    unsigned long tex3 = textures->loadTexture(runningdir + RESOURCES"outline.png");
     int backgroundx = 0;
     int backgroundy = 0;
 
-    test.loadFromFile(RESOURCES"vertexshader.vert",
-                      RESOURCES"fragmentshader.frag");
+    test.loadFromFile(runningdir + RESOURCES"vertexshader.vert",
+                      runningdir + RESOURCES"fragmentshader.frag");
 
     test.compileShader();
     test.linkShader();
     test.printLog(test.programObject);
 
-    test.deleteSources();
-
-    mainwin.EnableVerticalSync(false);
     glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),tex);
+
+    glUniform1i(glGetUniformLocation(test.programObject,"texture"),GL_TEXTURE1);
 
     while(program_running)
     {
@@ -75,13 +91,13 @@ int main(int argc, char *argv[])
             printf("backgroundx: %d, backgroundy: %d\n",backgroundx,backgroundy);
 
         if(adown)
-            backgroundx+=5;
+            backgroundx+=1;
         if(ddown)
-            backgroundx-=5;
+            backgroundx-=1;
         if(wdown)
-            backgroundy-=5;
+            backgroundy-=1;
         if(sdown)
-            backgroundy+=5;
+            backgroundy+=1;
 
         if(backgroundx > 0)
             backgroundx = 0;
@@ -93,10 +109,10 @@ int main(int argc, char *argv[])
             backgroundx = -4600;
 
         glEnable(GL_TEXTURE_2D);
-//        test.useShader(true);
         glBindTexture(GL_TEXTURE_2D, tex2);
         glPushMatrix();
         glTranslatef(backgroundx, backgroundy, 0); //offload this to the shader? probably should
+        test.useShader(true);
         glBegin(GL_QUADS);
 //            glTexCoord2f(0,0); glVertex2d((-1*mapresx),(-1*mapresy));
 //            glTexCoord2f(1,0); glVertex2d(mapresx,(-1*mapresy));
@@ -117,6 +133,7 @@ int main(int argc, char *argv[])
             glTexCoord2i(1.0,1.0); glVertex2d(250.0,250.0);
             glTexCoord2i(0.0,1.0); glVertex2d(50.0,250.0);
         glEnd();
+
 
         test.useShader(true);
         glBindTexture(GL_TEXTURE_2D, tex3);
