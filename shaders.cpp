@@ -123,6 +123,21 @@ int shader::linkShader()
     return 0;
 }
 
+void shader::useShader(bool use)
+{
+    if(use)
+        glUseProgram(programObject);
+    else
+        glUseProgram(0);
+}
+
+void shader::deleteSources()
+{
+    delete [] vertexSource;
+    delete [] fragmentSource;
+    isLoaded = false;
+}
+
 shader::shader()
 {
 
@@ -130,7 +145,6 @@ shader::shader()
 
 shader::~shader()
 {
-    isLoaded = false;
     isLinked = false;
     isCompiled = false;
 
@@ -140,6 +154,10 @@ shader::~shader()
     glDeleteShader(shader::fragmentObject);
     glDeleteProgram(shader::programObject);
 
-    delete [] vertexSource;
-    delete [] fragmentSource;
+    if(isLoaded)
+    {
+        delete [] vertexSource;
+        delete [] fragmentSource;
+    }
+    isLoaded = false;
 }

@@ -29,7 +29,9 @@ HEADERS += \
 
 OTHER_FILES += \
     vertexshader.vert \
-    fragmentshader.frag
+    fragmentshader.frag \
+    resources/vertexshader.vert \
+    resources/fragmentshader.frag
 
 INCLUDEPATH += $$PWD/../../../../usr/include
 DEPENDPATH += $$PWD/../../../../usr/include
@@ -58,3 +60,4 @@ unix: PKGCONFIG += glew
 #win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$PWD/../../../../usr/lib/release/xml2.lib
 #else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$PWD/../../../../usr/lib/debug/xml2.lib
 #else:unix:!symbian: PRE_TARGETDEPS += $$PWD/../../../../usr/lib/libxml2.a
+

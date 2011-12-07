@@ -45,7 +45,10 @@ int main(int argc, char *argv[])
     test.linkShader();
     test.printLog(test.programObject);
 
+    test.deleteSources();
+
     mainwin.EnableVerticalSync(false);
+    glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),tex);
 
     while(program_running)
     {
@@ -72,13 +75,13 @@ int main(int argc, char *argv[])
             printf("backgroundx: %d, backgroundy: %d\n",backgroundx,backgroundy);
 
         if(adown)
-            backgroundx++;
+            backgroundx+=5;
         if(ddown)
-            backgroundx--;
+            backgroundx-=5;
         if(wdown)
-            backgroundy--;
+            backgroundy-=5;
         if(sdown)
-            backgroundy++;
+            backgroundy+=5;
 
         if(backgroundx > 0)
             backgroundx = 0;
@@ -90,7 +93,7 @@ int main(int argc, char *argv[])
             backgroundx = -4600;
 
         glEnable(GL_TEXTURE_2D);
-
+//        test.useShader(true);
         glBindTexture(GL_TEXTURE_2D, tex2);
         glPushMatrix();
         glTranslatef(backgroundx, backgroundy, 0); //offload this to the shader? probably should
@@ -105,7 +108,7 @@ int main(int argc, char *argv[])
             glTexCoord2f(0,1); glVertex2d(0,mapresy);
         glEnd();
         glPopMatrix();
-        glUseProgram(0);
+        test.useShader(false);
 
         glBindTexture( GL_TEXTURE_2D, tex);
         glBegin(GL_QUADS);
@@ -115,8 +118,7 @@ int main(int argc, char *argv[])
             glTexCoord2i(0.0,1.0); glVertex2d(50.0,250.0);
         glEnd();
 
-        glUseProgram(test.programObject);
-        glUniform1i(glGetUniformLocation(test.programObject,"texture"),GL_TEXTURE1);
+        test.useShader(true);
         glBindTexture(GL_TEXTURE_2D, tex3);
         glBegin(GL_QUADS);
             glTexCoord2i(0.0,0.0); glVertex2d(500.0,500.0);
@@ -124,7 +126,7 @@ int main(int argc, char *argv[])
             glTexCoord2i(1.0,1.0); glVertex2d(700.0,700.0);
             glTexCoord2i(0.0,1.0); glVertex2d(500.0,700.0);
         glEnd();
-        glUseProgram(0);
+        test.useShader(false);
 
         mainwin.Display();
     }

@@ -37,11 +37,15 @@ public:
     void printLog(GLuint obj);
 
     /*
-      openGL shader object
-      can we move this to private?
+      enable or disable the shader
     */
-    GLuint vertexObject;
-    GLuint fragmentObject;
+    void useShader(bool use);
+
+    /*
+      delete the shader source code buffers
+      saves some memory
+    */
+    void deleteSources();
 
     /*
       openGL program object
@@ -56,6 +60,8 @@ private:
     GLint fragmentFileLength;
     GLchar *vertexSource;
     GLchar *fragmentSource;
+    GLuint vertexObject;
+    GLuint fragmentObject;
 };
 
 
