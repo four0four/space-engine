@@ -25,6 +25,10 @@ public:
     */
     unsigned int textureObject;
     /*
+       x and y size coords
+    */
+    unsigned int xsize, ysize;
+    /*
       this is a linked list, after all
     */
     textureNode *next;
@@ -52,6 +56,8 @@ public:
     void unloadTexture(unsigned int texID);
     void forceUnloadTexture(std::string filename);
     void forceUnloadTexture(unsigned int texID);
+    void selectTexture(std::string filename);
+    void selectTexture(unsigned int texID);
     textureList();
     ~textureList();
 };

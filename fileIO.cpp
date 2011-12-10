@@ -78,6 +78,8 @@ unsigned int textureList::loadTexture(std::string imagename)
     printf("- %s loaded\n",current->filename);
     current->textureObject = texture;
     current->usages = 1;
+    current->ysize = height;
+    current->xsize = width;
     return texture;
 }
 
@@ -154,6 +156,46 @@ void textureList::unloadTexture(unsigned int texID)
     else
         printf("ERROR: Texture %d not loaded\n - Unable to unload\n",texID);
     return;
+}
+
+void textureList::selectTexture(std::string filename)
+{
+    bool found;
+    current = bottom;
+    while(current)
+    {
+        if(!(strcmp(filename.c_str(),current->filename)))
+        {
+            found = 1;
+            break;
+        }
+        current = current->next;
+    }
+    if(found == 0)
+    {
+        printf("ERROR: Texture %s not loaded\n - Supposed to be loaded\n",filename.c_str());
+        return;
+    }
+}
+
+void textureList::selectTexture(unsigned int texID)
+{
+    bool found;
+    current = bottom;
+    while(current)
+    {
+        if(texID == current->textureObject)
+        {
+            found = 1;
+            break;
+        }
+        current = current->next;
+    }
+    if(found == 0)
+    {
+        printf("ERROR: Texture %d not loaded\n - Supposed to be loaded\n",texID);
+        return;
+    }
 }
 
 textureList::textureList()

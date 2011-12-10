@@ -3,8 +3,7 @@
   that the other files are perfect, but main.cpp is simply a testing framework. It will
   probably not work on your computer. In fact, it will probably break horribly.
 */
-//#include <SFML/Window.hpp>
-//#include <SFML/Graphics.hpp>
+
 #include <SDL/SDL.h>
 #include <GL/glew.h>
 #include <GL/gl.h>
@@ -82,6 +81,14 @@ int main(int argc, char *argv[])
     unsigned long tex3 = textures->loadTexture(runningdir + RESOURCES"outline.png");
     int backgroundx = 0;
     int backgroundy = 0;
+    float texx,texy;
+
+    /* redundant, but testing */
+    textures->selectTexture(runningdir + RESOURCES"hubble1.jpg");
+    textures->selectTexture(tex2);
+
+    texx = (float)xres/textures->current->xsize;
+    texy = (float)yres/textures->current->ysize;
 
     test.loadFromFile(runningdir + RESOURCES"vertexshader.vert",
                       runningdir + RESOURCES"fragmentshader.frag");
@@ -114,6 +121,8 @@ int main(int argc, char *argv[])
                 case SDLK_d:
                     ddown = !ddown;
                     break;
+                case SDLK_ESCAPE:
+                    program_running = false;
                 default:
                     break;
             }
@@ -129,29 +138,35 @@ int main(int argc, char *argv[])
         if(sdown)
             backgroundy+=1;
 
-        if(backgroundx > 0)
-            backgroundx = 0;
-        if(backgroundy > 0)
-            backgroundy = 0;
-        if(backgroundy < -2100)
-            backgroundy = -2100;
-        if(backgroundx < -4600)
-            backgroundx = -4600;
+//        if(backgroundx > 0)
+//            backgroundx = 0;
+//        if(backgroundy > 0)
+//            backgroundy = 0;
+//        if(backgroundy < -2100)
+//            backgroundy = -2100;
+//        if(backgroundx < -4600)
+//            backgroundx = -4600;
 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, tex2);
         glPushMatrix();
         glTranslatef(backgroundx, backgroundy, 0); //offload this to the shader? probably should
         test.useShader(true);
+
+
         glBegin(GL_QUADS);
 //            glTexCoord2f(0,0); glVertex2d((-1*mapresx),(-1*mapresy));
 //            glTexCoord2f(1,0); glVertex2d(mapresx,(-1*mapresy));
 //            glTexCoord2f(1,1); glVertex2d(mapresx,mapresy);
 //            glTexCoord2f(0,1); glVertex2d((-1*mapresx),mapresy);
+//            glTexCoord2f(0,0); glVertex2d(0,0);
+//            glTexCoord2f(1,0); glVertex2d(mapresx,0);
+//            glTexCoord2f(1,1); glVertex2d(mapresx,mapresy);
+//            glTexCoord2f(0,1); glVertex2d(0,mapresy);
             glTexCoord2f(0,0); glVertex2d(0,0);
-            glTexCoord2f(1,0); glVertex2d(mapresx,0);
-            glTexCoord2f(1,1); glVertex2d(mapresx,mapresy);
-            glTexCoord2f(0,1); glVertex2d(0,mapresy);
+            glTexCoord2f(texx,0); glVertex2d(xres,0);
+            glTexCoord2f(texx,texy); glVertex2d(xres,yres);
+            glTexCoord2f(0,texy); glVertex2d(0,yres);
         glEnd();
         glPopMatrix();
         test.useShader(false);
