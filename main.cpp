@@ -13,14 +13,18 @@
 #include "fileIO.h"
 #include "renderer.h"
 #include "shaders.h"
+#include "sprite.h"
 
 #define RESOURCES "/resources/"
+
+//Bad, bad globals...temporary until engine class
 
 bool program_running = 1;
 
 bool wdown, adown, sdown, ddown;
 
 shader test;
+textureList *textures;
 
 #define mapresx 6000
 #define mapresy 2906
@@ -31,7 +35,7 @@ int main(int argc, char *argv[])
     int videoFlags;
     SDL_Surface *surface;
     SDL_Event event;
-    textureList *textures = new textureList;
+    textures = new textureList;
 
     /* initialize SDL */
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -79,9 +83,16 @@ int main(int argc, char *argv[])
     unsigned long tex = textures->loadTexture(runningdir + RESOURCES"outline.png");
     unsigned long tex2 = textures->loadTexture(runningdir + RESOURCES"hubble1.jpg");
     unsigned long tex3 = textures->loadTexture(runningdir + RESOURCES"outline.png");
+
     int backgroundx = 0;
     int backgroundy = 0;
+
     float texx,texy;
+
+    sprite *testy = new sprite(runningdir + RESOURCES"outline.png");
+
+    testy->setPosition(2,1);
+    testy->setSizeToTexture();
 
     /* redundant, but testing */
     textures->selectTexture(runningdir + RESOURCES"hubble1.jpg");
@@ -147,26 +158,26 @@ int main(int argc, char *argv[])
 //        if(backgroundx < -4600)
 //            backgroundx = -4600;
 
+
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, tex2);
         glPushMatrix();
-        glTranslatef(backgroundx, backgroundy, 0); //offload this to the shader? probably should
+//        glTranslatef(backgroundx, backgroundy, 0); //offload this to the shader? probably should
         test.useShader(true);
-
 
         glBegin(GL_QUADS);
 //            glTexCoord2f(0,0); glVertex2d((-1*mapresx),(-1*mapresy));
 //            glTexCoord2f(1,0); glVertex2d(mapresx,(-1*mapresy));
 //            glTexCoord2f(1,1); glVertex2d(mapresx,mapresy);
 //            glTexCoord2f(0,1); glVertex2d((-1*mapresx),mapresy);
-//            glTexCoord2f(0,0); glVertex2d(0,0);
-//            glTexCoord2f(1,0); glVertex2d(mapresx,0);
-//            glTexCoord2f(1,1); glVertex2d(mapresx,mapresy);
-//            glTexCoord2f(0,1); glVertex2d(0,mapresy);
             glTexCoord2f(0,0); glVertex2d(0,0);
-            glTexCoord2f(texx,0); glVertex2d(xres,0);
-            glTexCoord2f(texx,texy); glVertex2d(xres,yres);
-            glTexCoord2f(0,texy); glVertex2d(0,yres);
+            glTexCoord2f(1,0); glVertex2d(mapresx,0);
+            glTexCoord2f(1,1); glVertex2d(mapresx,mapresy);
+            glTexCoord2f(0,1); glVertex2d(0,mapresy);
+//            glTexCoord2f(0,0); glVertex2d(0,0);
+//            glTexCoord2f(texx,0); glVertex2d(xres,0);
+//            glTexCoord2f(texx,texy); glVertex2d(xres,yres);
+//            glTexCoord2f(0,texy); glVertex2d(0,yres);
         glEnd();
         glPopMatrix();
         test.useShader(false);
@@ -174,7 +185,7 @@ int main(int argc, char *argv[])
         glBindTexture( GL_TEXTURE_2D, tex);
         glBegin(GL_QUADS);
             glTexCoord2i(0.0,0.0); glVertex2d(50.0,50.0);
-            glTexCoord2i(1.0,0.0); glVertex2d(250.0,50.0);
+            glTexCoord2i(1.0,0.0); glVertex2d(251.0,50.0);
             glTexCoord2i(1.0,1.0); glVertex2d(250.0,250.0);
             glTexCoord2i(0.0,1.0); glVertex2d(50.0,250.0);
         glEnd();
@@ -189,6 +200,13 @@ int main(int argc, char *argv[])
             glTexCoord2i(0.0,1.0); glVertex2d(500.0,700.0);
         glEnd();
         test.useShader(false);
+
+//        testy->setPosition(backgroundx,backgroundy);
+        testy->render();
+
+//        glPopMatrix();
+        glTranslatef(backgroundx/10,backgroundy/10,0);
+//        glPushMatrix();
 
         SDL_GL_SwapBuffers();
 
