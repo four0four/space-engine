@@ -26,30 +26,40 @@ shader test;
 #define mapresx 6000
 #define mapresy 2906
 
+
 int main(int argc, char *argv[])
 {
-
-    /* Initialize SDL for video output */
-    if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
-      fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError());
-      exit(1);
-    }
-
-    /* Create a 640x480 OpenGL screen */
-    if ( SDL_SetVideoMode(640, 480, 0, SDL_OPENGL) == NULL ) {
-      fprintf(stderr, "Unable to create OpenGL screen: %s\n", SDL_GetError());
-      SDL_Quit();
-      exit(2);
-    }
-
-    /* Set the title bar in environments that support it */
-    SDL_WM_SetCaption("Jeff Molofee's GL Code Tutorial ... NeHe '99", NULL);
-
-//    sf::Window mainwin(sf::VideoMode(xres,yres,32),"devtest");
-    gl_init();
-//    mainwin.EnableVerticalSync(false);
-
+    int videoFlags;
+    SDL_Surface *surface;
+    SDL_Event event;
     textureList *textures = new textureList;
+
+    /* initialize SDL */
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+    {
+        printf("Fatal: Video initialization failed at init() with %s\n", SDL_GetError());
+        return 1;
+    }
+
+    /* the flags to pass to SDL_SetVideoMode */
+    videoFlags  = SDL_OPENGL;          /* Enable OpenGL in SDL */
+    videoFlags |= SDL_GL_DOUBLEBUFFER; /* Enable double buffering */
+    videoFlags |= SDL_HWPALETTE;       /* Store the palette in hardware */
+    videoFlags |= SDL_RESIZABLE;       /* Enable window resizing */
+
+
+    SDL_WM_SetCaption("devtest", NULL);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+    /* get a SDL surface */
+    surface = SDL_SetVideoMode(xres, yres, bpp,
+                                videoFlags);
+    if (!surface)
+        {
+            printf("Fatal: Video mode set failed with: %s\n", SDL_GetError());
+            return 1;
+        }
+    initGL();
 
 
     /*
@@ -86,45 +96,47 @@ int main(int argc, char *argv[])
 
     while(program_running)
     {
-//        // Grab events - Setting vars prevents unnecessary polling later
-//        if (sf::Keyboard::IsKeyPressed(sf::Keyboard::A))
-//            adown = 1;
-//        else
-//            adown = 0;
-//        if (sf::Keyboard::IsKeyPressed(sf::Keyboard::S))
-//            sdown = 1;
-//        else
-//            sdown = 0;
-//        if (sf::Keyboard::IsKeyPressed(sf::Keyboard::W))
-//            wdown = 1;
-//        else
-//            wdown = 0;
-//        if (sf::Keyboard::IsKeyPressed(sf::Keyboard::D))
-//            ddown = 1;
-//        else
-//            ddown = 0;
-//        if(sf::Keyboard::IsKeyPressed(sf::Keyboard::Escape))
-//            program_running = 0;
-//        if(sf::Keyboard::IsKeyPressed(sf::Keyboard::P))
-//            printf("backgroundx: %d, backgroundy: %d\n",backgroundx,backgroundy);
+        // Grab events - Setting vars prevents unnecessary polling later
+        // Also - Split this into input.cpp or something later
 
-//        if(adown)
-//            backgroundx+=1;
-//        if(ddown)
-//            backgroundx-=1;
-//        if(wdown)
-//            backgroundy-=1;
-//        if(sdown)
-//            backgroundy+=1;
+        while (SDL_PollEvent(&event))
+        {
+            switch(event.key.keysym.sym){
+                case SDLK_w:
+                    wdown = !wdown;
+                    break;
+                case SDLK_s:
+                    sdown = !sdown;
+                    break;
+                case SDLK_a:
+                    adown = !adown;
+                    break;
+                case SDLK_d:
+                    ddown = !ddown;
+                    break;
+                default:
+                    break;
+            }
 
-//        if(backgroundx > 0)
-//            backgroundx = 0;
-//        if(backgroundy > 0)
-//            backgroundy = 0;
-//        if(backgroundy < -2100)
-//            backgroundy = -2100;
-//        if(backgroundx < -4600)
-//            backgroundx = -4600;
+        }
+
+        if(adown)
+            backgroundx+=1;
+        if(ddown)
+            backgroundx-=1;
+        if(wdown)
+            backgroundy-=1;
+        if(sdown)
+            backgroundy+=1;
+
+        if(backgroundx > 0)
+            backgroundx = 0;
+        if(backgroundy > 0)
+            backgroundy = 0;
+        if(backgroundy < -2100)
+            backgroundy = -2100;
+        if(backgroundx < -4600)
+            backgroundx = -4600;
 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, tex2);
@@ -163,7 +175,6 @@ int main(int argc, char *argv[])
         glEnd();
         test.useShader(false);
 
-//        mainwin.Display();
         SDL_GL_SwapBuffers();
 
     }

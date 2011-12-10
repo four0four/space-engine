@@ -1,6 +1,6 @@
 #include "renderer.h"
 
-void gl_init()
+void initGL()
 {
     glewInit();
 

@@ -6,7 +6,8 @@
 
 #define xres 1366
 #define yres 768
+#define bpp 32
 
-void gl_init();
+void initGL();
 
 #endif // RENDERER_H
