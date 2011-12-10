@@ -38,12 +38,13 @@ DEPENDPATH += $$PWD/../../../../usr/include
 INCLUDEPATH += $$PWD/../../../../usr/include/libxml2
 DEPENDPATH += $$PWD/../../../../usr/include/libxml2
 
-unix:!macx:!symbian: LIBS += -lsfml-graphics
+#unix:!macx:!symbian: LIBS += -lsfml-graphics
 
-unix:!macx:!symbian: LIBS += -lsfml-window
+#unix:!macx:!symbian: LIBS += -lsfml-window
 
 unix:!macx:!symbian: LIBS += -lfreeimage
-
+unix:!macx:!symbian: LIBS += /usr/lib/libGL.so
+unix:!macx:!symbian: LIBS += /usr/lib/libSDL.so
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += glew
 
