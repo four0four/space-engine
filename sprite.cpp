@@ -39,10 +39,10 @@ void sprite::setPivot(unsigned int x, unsigned int y)
     this->pivoty = y;
 }
 
-void sprite::setPosition(unsigned int x, unsigned int y)
+void sprite::setPosition(int x, int y)
 {
-    this->xposition = x;
-    this->yposition = y;
+    this->xposition = x/2;//merp? UGLY
+    this->yposition = y/2;
 }
 
 void sprite::setSizeToTexture() //change to scaling?
@@ -50,6 +50,12 @@ void sprite::setSizeToTexture() //change to scaling?
     textures->selectTexture(this->texture);
     this->width = textures->current->xsize;
     this->height = textures->current->ysize;
+}
+
+void sprite::setSize(int x, int y)
+{
+    this->width = x;
+    this->height = y;
 }
 
 void sprite::render()

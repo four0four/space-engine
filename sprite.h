@@ -13,9 +13,10 @@ public:
     ~sprite();
     void setTexture(std::string imagename);
     void rotate(int degrees);
-    void setPosition(unsigned int x, unsigned int y);
+    void setPosition(int x, int y);
     void setPivot(unsigned int x, unsigned int y);
     void setSizeToTexture();
+    void setSize(int x, int y);
     void render();
 private:
     unsigned int texture; //Currently assigned opengl texture
@@ -23,7 +24,7 @@ private:
     unsigned int pivotx, pivoty; //Points from which the sprite can pivot
     int angle; //Rotation
 //    unsigned int texwidth, texheight; //Another instance of more memory -> faster
-    unsigned int width, height;
+    int width, height;
 //    float texx, texy; //Again. Also, might remove. Oh, and they're for texels
 };
 

@@ -21,7 +21,9 @@
 
 bool program_running = 1;
 
-bool wdown, adown, sdown, ddown;
+bool wdown, adown, sdown, ddown, qdown, edown;
+
+unsigned int ticks;
 
 shader test;
 textureList *textures;
@@ -86,13 +88,17 @@ int main(int argc, char *argv[])
 
     int backgroundx = 0;
     int backgroundy = 0;
+    float scale = 1;
 
     float texx,texy;
 
     sprite *testy = new sprite(runningdir + RESOURCES"outline.png");
-
-    testy->setPosition(2,1);
-    testy->setSizeToTexture();
+    sprite *tester = new sprite(runningdir + RESOURCES"outline.png");
+    testy->setPosition(0,0);
+    tester->setPosition(501,501);
+//    testy->setSizeToTexture();
+    testy->setSize(501,501);
+    tester->setSize(501,501);
 
     /* redundant, but testing */
     textures->selectTexture(runningdir + RESOURCES"hubble1.jpg");
@@ -116,55 +122,57 @@ int main(int argc, char *argv[])
     {
         // Grab events - Setting vars prevents unnecessary polling later
         // Also - Split this into input.cpp or something later
-
-        while (SDL_PollEvent(&event))
+    ticks = SDL_GetTicks();
+        if (ticks%20) //every 20ms, update)
         {
-            switch(event.key.keysym.sym){
-                case SDLK_w:
-                    wdown = !wdown;
-                    break;
-                case SDLK_s:
-                    sdown = !sdown;
-                    break;
-                case SDLK_a:
-                    adown = !adown;
-                    break;
-                case SDLK_d:
-                    ddown = !ddown;
-                    break;
-                case SDLK_ESCAPE:
-                    program_running = false;
-                default:
-                    break;
+            while (SDL_PollEvent(&event))
+            {
+                switch(event.key.keysym.sym){
+                    case SDLK_w:
+                        wdown = !wdown;
+                        break;
+                    case SDLK_s:
+                        sdown = !sdown;
+                        break;
+                    case SDLK_a:
+                        adown = !adown;
+                        break;
+                    case SDLK_d:
+                        ddown = !ddown;
+                        break;
+                    case SDLK_e:
+                        edown = !edown;
+                        break;
+                    case SDLK_q:
+                        qdown = !qdown;
+                        break;
+                    case SDLK_ESCAPE:
+                        program_running = false;
+                    default:
+                        break;
+                }
             }
 
+            if(adown)
+                backgroundx+=1;
+            if(ddown)
+                backgroundx-=1;
+            if(wdown)
+                backgroundy-=1;
+            if(sdown)
+                backgroundy+=1;
+            if(qdown)
+                scale-=0.001;
+            if(edown)
+                scale+=0.001;
+
         }
-
-        if(adown)
-            backgroundx+=1;
-        if(ddown)
-            backgroundx-=1;
-        if(wdown)
-            backgroundy-=1;
-        if(sdown)
-            backgroundy+=1;
-
-//        if(backgroundx > 0)
-//            backgroundx = 0;
-//        if(backgroundy > 0)
-//            backgroundy = 0;
-//        if(backgroundy < -2100)
-//            backgroundy = -2100;
-//        if(backgroundx < -4600)
-//            backgroundx = -4600;
-
 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, tex2);
         glPushMatrix();
 //        glTranslatef(backgroundx, backgroundy, 0); //offload this to the shader? probably should
-        test.useShader(true);
-
+//        test.useShader(true);
         glBegin(GL_QUADS);
 //            glTexCoord2f(0,0); glVertex2d((-1*mapresx),(-1*mapresy));
 //            glTexCoord2f(1,0); glVertex2d(mapresx,(-1*mapresy));
@@ -182,32 +190,13 @@ int main(int argc, char *argv[])
         glPopMatrix();
         test.useShader(false);
 
-        glBindTexture( GL_TEXTURE_2D, tex);
-        glBegin(GL_QUADS);
-            glTexCoord2i(0.0,0.0); glVertex2d(50.0,50.0);
-            glTexCoord2i(1.0,0.0); glVertex2d(251.0,50.0);
-            glTexCoord2i(1.0,1.0); glVertex2d(250.0,250.0);
-            glTexCoord2i(0.0,1.0); glVertex2d(50.0,250.0);
-        glEnd();
-
-
-        test.useShader(true);
-        glBindTexture(GL_TEXTURE_2D, tex3);
-        glBegin(GL_QUADS);
-            glTexCoord2i(0.0,0.0); glVertex2d(500.0,500.0);
-            glTexCoord2i(1.0,0.0); glVertex2d(700.0,500.0);
-            glTexCoord2i(1.0,1.0); glVertex2d(700.0,700.0);
-            glTexCoord2i(0.0,1.0); glVertex2d(500.0,700.0);
-        glEnd();
-        test.useShader(false);
-
-//        testy->setPosition(backgroundx,backgroundy);
         testy->render();
+        tester->render();
 
-//        glPopMatrix();
-        glTranslatef(backgroundx/10,backgroundy/10,0);
-//        glPushMatrix();
-
+        glLoadIdentity();
+        glTranslatef(backgroundx/2,backgroundy/2,0);
+        glScalef(scale,scale,1);
+        glTranslatef(backgroundx,backgroundy,0);
         SDL_GL_SwapBuffers();
 
     }

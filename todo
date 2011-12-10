@@ -6,6 +6,25 @@
 - Keep in mind: we're using gl coords as global (map/world!) coords, at least for now.
 - Render to texture 
 - Layers
+	- DO THIS NOW
+	- It will make things easier, I promise. Especially backgrounds
 - Add more shit to the todo
 - Find the old todo, add its shit to this todo
 
+
+----REALLY LONG TERM----
+
+- Toroidal map!
+- Procedural planets
+	- procedural background?
+
+
+----Classes----
+-Engine
+	-Layer
+		-Shader
+		-Sprites/Objects (text, buttons, etc)
+        	-Shader
+			-Texture
+		-Texture (optional)
+	
