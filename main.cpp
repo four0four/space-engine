@@ -8,14 +8,12 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <GL/glext.h>
-#include <unistd.h>
 #include "fileIO.h"
 #include "renderer.h"
 #include "shaders.h"
 #include "sprite.h"
 
-#define RESOURCES "/resources/"
+#define RESOURCES "resources/"
 
 //Bad, bad globals...temporary until engine class
 
@@ -70,8 +68,9 @@ int main(int argc, char *argv[])
     /*
       HACK ALERT!
       move to init fxn (when created)
+	  make windows like it
     */
-    char *filepath;
+   /* char *filepath;
     std::string runningdir;
     long size;
     size = pathconf(".", _PC_PATH_MAX);
@@ -79,12 +78,12 @@ int main(int argc, char *argv[])
     getcwd(filepath, (size_t)size);
     runningdir = filepath;
     delete [] filepath;
-    printf("LOG: launch dir: %s\n",runningdir.c_str());
+    printf("LOG: launch dir: %s\n",runningdir.c_str()); */
 
     /* it's much faster to store these in seperate vars */
-    unsigned long tex = textures->loadTexture(runningdir + RESOURCES"outline.png");
-    unsigned long tex2 = textures->loadTexture(runningdir + RESOURCES"hubble1.jpg");
-    unsigned long tex3 = textures->loadTexture(runningdir + RESOURCES"outline.png");
+    unsigned long tex = textures->loadTexture(RESOURCES"outline.png");
+    unsigned long tex2 = textures->loadTexture(RESOURCES"hubble1.jpg");
+    unsigned long tex3 = textures->loadTexture(RESOURCES"outline.png");
 
     int backgroundx = 0;
     int backgroundy = 0;
@@ -92,8 +91,8 @@ int main(int argc, char *argv[])
 
     float texx,texy;
 
-    sprite *testy = new sprite(runningdir + RESOURCES"outline.png");
-    sprite *tester = new sprite(runningdir + RESOURCES"outline.png");
+    sprite *testy = new sprite(RESOURCES"outline.png");
+    sprite *tester = new sprite(RESOURCES"outline.png");
     testy->setPosition(0,0);
     tester->setPosition(501,501);
 //    testy->setSizeToTexture();
@@ -101,14 +100,14 @@ int main(int argc, char *argv[])
     tester->setSize(501,501);
 
     /* redundant, but testing */
-    textures->selectTexture(runningdir + RESOURCES"hubble1.jpg");
+    textures->selectTexture(RESOURCES"hubble1.jpg");
     textures->selectTexture(tex2);
 
     texx = (float)xres/textures->current->xsize;
     texy = (float)yres/textures->current->ysize;
 
-    test.loadFromFile(runningdir + RESOURCES"vertexshader.vert",
-                      runningdir + RESOURCES"fragmentshader.frag");
+    test.loadFromFile(RESOURCES"vertexshader.vert",
+                      RESOURCES"fragmentshader.frag");
 
     test.compileShader();
     test.linkShader();

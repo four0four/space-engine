@@ -21,7 +21,7 @@ void shader::printLog(GLuint obj)
                 glGetShaderiv(obj,GL_INFO_LOG_LENGTH,&maxLength);
         else
                 glGetProgramiv(obj,GL_INFO_LOG_LENGTH,&maxLength);
-        char infoLog[maxLength];
+		char *infoLog = new char[maxLength];
         if (glIsShader(obj))
         {
                 glGetShaderInfoLog(obj, maxLength, &infologLength, infoLog);

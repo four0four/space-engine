@@ -41,7 +41,7 @@ unsigned int textureList::loadTexture(std::string imagename)
 
     if((format = FreeImage_GetFileType(imagename.c_str(),0)) == -1)
     {
-        printf("ERROR: Unable to load texture %s!.\n",imagename.c_str()); //Set some flag?
+        printf("ERROR: Unable to load texture %s!\n",imagename.c_str()); //Set some flag?
         return -1;
     }
 
@@ -160,7 +160,7 @@ void textureList::unloadTexture(unsigned int texID)
 
 void textureList::selectTexture(std::string filename)
 {
-    bool found;
+    bool found = 0;
     current = bottom;
     while(current)
     {
@@ -180,7 +180,7 @@ void textureList::selectTexture(std::string filename)
 
 void textureList::selectTexture(unsigned int texID)
 {
-    bool found;
+    bool found = 0;
     current = bottom;
     while(current)
     {
