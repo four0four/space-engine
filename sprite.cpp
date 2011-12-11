@@ -39,7 +39,7 @@ void sprite::setPivot(unsigned int x, unsigned int y)
     this->pivoty = y;
 }
 
-void sprite::setPosition(int x, int y)
+void sprite::setPosition(double x, double y)
 {
     this->xposition = x/2;//merp? UGLY
     this->yposition = y/2;

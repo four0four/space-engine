@@ -19,7 +19,8 @@
 
 bool program_running = 1;
 
-bool wdown, adown, sdown, ddown, qdown, edown;
+bool wdown, adown, sdown, ddown, qdown, edown,
+        leftdown,rightdown,updown,downdown;
 
 unsigned int ticks;
 
@@ -32,6 +33,8 @@ textureList *textures;
 
 int main(int argc, char *argv[])
 {
+
+
     int videoFlags;
     SDL_Surface *surface;
     SDL_Event event;
@@ -81,24 +84,25 @@ int main(int argc, char *argv[])
     printf("LOG: launch dir: %s\n",runningdir.c_str()); */
 
     /* it's much faster to store these in seperate vars */
-    unsigned long tex = textures->loadTexture(RESOURCES"outline.png");
+//    unsigned long tex = textures->loadTexture(RESOURCES"outline.png");
     unsigned long tex2 = textures->loadTexture(RESOURCES"hubble1.jpg");
-    unsigned long tex3 = textures->loadTexture(RESOURCES"outline.png");
+//    unsigned long tex3 = textures->loadTexture(RESOURCES"ship.png");
 
     int backgroundx = 0;
     int backgroundy = 0;
+    int camx, camy;
+    int spritex = 0;
+    int spritey=0;
     float scale = 1;
 
     float texx,texy;
-
     sprite *testy = new sprite(RESOURCES"outline.png");
     sprite *tester = new sprite(RESOURCES"outline.png");
-    testy->setPosition(0,0);
-    tester->setPosition(501,501);
+    testy->setPosition(0.0,0.0);
+    tester->setPosition(501.0,501.0);
 //    testy->setSizeToTexture();
     testy->setSize(501,501);
     tester->setSize(501,501);
-
     /* redundant, but testing */
     textures->selectTexture(RESOURCES"hubble1.jpg");
     textures->selectTexture(tex2);
@@ -113,9 +117,9 @@ int main(int argc, char *argv[])
     test.linkShader();
     test.printLog(test.programObject);
 
-    glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),tex);
+//    glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),tex);
 
-    glUniform1i(glGetUniformLocation(test.programObject,"texture"),GL_TEXTURE1);
+//    glUniform1i(glGetUniformLocation(test.programObject,"texture"),GL_TEXTURE1);
 
     while(program_running)
     {
@@ -145,6 +149,18 @@ int main(int argc, char *argv[])
                     case SDLK_q:
                         qdown = !qdown;
                         break;
+                    case SDLK_UP:
+                        updown = !updown;
+                        break;
+                    case SDLK_DOWN:
+                        downdown = !downdown;
+                        break;
+                    case SDLK_LEFT:
+                        leftdown = !leftdown;
+                        break;
+                    case SDLK_RIGHT:
+                        rightdown = !rightdown;
+                        break;
                     case SDLK_ESCAPE:
                         program_running = false;
                     default:
@@ -152,25 +168,41 @@ int main(int argc, char *argv[])
                 }
             }
 
-            if(adown)
+            if(adown){
                 backgroundx+=1;
-            if(ddown)
+                camx++;
+            }
+            if(ddown){
+                camx--;
                 backgroundx-=1;
-            if(wdown)
+            }
+            if(wdown){
+                camy--;
                 backgroundy-=1;
-            if(sdown)
+            }
+            if(sdown) {
                 backgroundy+=1;
+                camy++;
+            }
             if(qdown)
                 scale-=0.001;
             if(edown)
                 scale+=0.001;
+            if(rightdown)
+                spritex++;
+            if(leftdown)
+                spritex--;
+            if(updown)
+                spritey++;
+            if(downdown)
+                spritey--;
 
         }
 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, tex2);
         glPushMatrix();
-//        glTranslatef(backgroundx, backgroundy, 0); //offload this to the shader? probably should
+        glTranslatef(backgroundx/2, backgroundy/2, 0); //offload this to the shader? probably should
 //        test.useShader(true);
         glBegin(GL_QUADS);
 //            glTexCoord2f(0,0); glVertex2d((-1*mapresx),(-1*mapresy));
@@ -190,12 +222,15 @@ int main(int argc, char *argv[])
         test.useShader(false);
 
         testy->render();
+        tester->setPosition(spritex,spritey);
         tester->render();
 
         glLoadIdentity();
-        glTranslatef(backgroundx/2,backgroundy/2,0);
         glScalef(scale,scale,1);
-        glTranslatef(backgroundx,backgroundy,0);
+        glTranslatef(camx,camy,0);
+
+        glFlush();
+        glFinish();
         SDL_GL_SwapBuffers();
 
     }

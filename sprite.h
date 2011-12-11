@@ -13,14 +13,14 @@ public:
     ~sprite();
     void setTexture(std::string imagename);
     void rotate(int degrees);
-    void setPosition(int x, int y);
+    void setPosition(double x, double y);
     void setPivot(unsigned int x, unsigned int y);
     void setSizeToTexture();
     void setSize(int x, int y);
     void render();
 private:
     unsigned int texture; //Currently assigned opengl texture
-    unsigned int xposition, yposition; //Raw position, from lower left corner (0,0)
+    double xposition, yposition; //Raw position, from lower left corner (0,0)
     unsigned int pivotx, pivoty; //Points from which the sprite can pivot
     int angle; //Rotation
 //    unsigned int texwidth, texheight; //Another instance of more memory -> faster
