@@ -30,11 +30,12 @@ unsigned int textureList::loadTexture(std::string imagename)
         current = current->next;
 
     current->next = new textureNode;
-    //For now, leave the anchor alone
+    //For now, leave the anchor alone -- Change to cpp vectors?
 //    if(strcmp(current->filename,"first")) //If the list is empty, use the anchor
         current = current->next;
     current->next = NULL;
-    strcpy(current->filename,imagename.c_str());
+    //strcpy(current->filename,imagename.c_str());
+	strncpy_s(current->filename,imagename.c_str(),1024);
 
     unsigned int texture;
     FREE_IMAGE_FORMAT format;
@@ -173,7 +174,7 @@ void textureList::selectTexture(std::string filename)
     }
     if(found == 0)
     {
-        printf("ERROR: Texture %s not loaded\n - Supposed to be loaded\n",filename.c_str());
+        printf("ERROR: Texture %s not loaded\n - Unable to select\n",filename.c_str());
         return;
     }
 }
@@ -193,7 +194,7 @@ void textureList::selectTexture(unsigned int texID)
     }
     if(found == 0)
     {
-        printf("ERROR: Texture %d not loaded\n - Supposed to be loaded\n",texID);
+        printf("ERROR: Texture %d not loaded\n - Unable to select\n",texID);
         return;
     }
 }
@@ -204,7 +205,7 @@ textureList::textureList()
     current = bottom;
     top = NULL;
     current->next = NULL;
-    strcpy(bottom->filename,"first");
+    strncpy_s(bottom->filename,"first",6);
 }
 
 textureList::~textureList()

@@ -20,7 +20,7 @@ sprite::~sprite()
 
 void sprite::setTexture(std::string imagename)
 {
-    this->texture = textures->loadTexture(imagename);
+    this->texture = textures->loadTexture(imagename); //Add better error handling. Enough segfaults
 }
 
 void sprite::rotate(int degrees)

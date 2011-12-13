@@ -90,7 +90,8 @@ int main(int argc, char *argv[])
 
     int backgroundx = 0;
     int backgroundy = 0;
-    int camx, camy;
+    int camx = 0;
+	int camy = 0;
     int spritex = 0;
     int spritey=0;
     float scale = 1;
@@ -119,7 +120,7 @@ int main(int argc, char *argv[])
 
 //    glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),tex);
 
-//    glUniform1i(glGetUniformLocation(test.programObject,"texture"),GL_TEXTURE1);
+    glUniform1i(glGetUniformLocation(test.programObject,"texture"),GL_TEXTURE1);
 
     while(program_running)
     {
@@ -169,25 +170,25 @@ int main(int argc, char *argv[])
             }
 
             if(adown){
-                backgroundx+=1;
-                camx++;
+                backgroundx-=3;
+                camx+=3;
             }
             if(ddown){
-                camx--;
-                backgroundx-=1;
+                camx-=3;
+                backgroundx+=3;
             }
             if(wdown){
-                camy--;
-                backgroundy-=1;
+                camy-=3;
+                backgroundy+=3;
             }
             if(sdown) {
-                backgroundy+=1;
-                camy++;
+                backgroundy-=3;
+                camy+=3;
             }
             if(qdown)
-                scale-=0.001;
+                scale-=0.005;
             if(edown)
-                scale+=0.001;
+                scale+=0.005;
             if(rightdown)
                 spritex++;
             if(leftdown)
@@ -203,7 +204,7 @@ int main(int argc, char *argv[])
         glBindTexture(GL_TEXTURE_2D, tex2);
         glPushMatrix();
         glTranslatef(backgroundx/2, backgroundy/2, 0); //offload this to the shader? probably should
-//        test.useShader(true);
+        test.useShader(true);
         glBegin(GL_QUADS);
 //            glTexCoord2f(0,0); glVertex2d((-1*mapresx),(-1*mapresy));
 //            glTexCoord2f(1,0); glVertex2d(mapresx,(-1*mapresy));
@@ -219,9 +220,10 @@ int main(int argc, char *argv[])
 //            glTexCoord2f(0,texy); glVertex2d(0,yres);
         glEnd();
         glPopMatrix();
-        test.useShader(false);
-
+		test.useShader(false);
+		//test.useShader(true);
         testy->render();
+        //test.useShader(false);
         tester->setPosition(spritex,spritey);
         tester->render();
 
@@ -229,8 +231,8 @@ int main(int argc, char *argv[])
         glScalef(scale,scale,1);
         glTranslatef(camx,camy,0);
 
-        glFlush();
-        glFinish();
+       // glFlush();
+      //  glFinish();
         SDL_GL_SwapBuffers();
 
     }
