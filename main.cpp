@@ -33,8 +33,6 @@ textureList *textures;
 
 int main(int argc, char *argv[])
 {
-
-
     int videoFlags;
     SDL_Surface *surface;
     SDL_Event event;
@@ -55,18 +53,16 @@ int main(int argc, char *argv[])
 
 
     SDL_WM_SetCaption("devtest", NULL);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
     /* get a SDL surface */
     surface = SDL_SetVideoMode(xres, yres, bpp,
                                 videoFlags);
     if (!surface)
-        {
+    {
             printf("Fatal: Video mode set failed with: %s\n", SDL_GetError());
             return 1;
-        }
+    }
     initGL();
-
 
     /*
       HACK ALERT!
@@ -88,28 +84,27 @@ int main(int argc, char *argv[])
     unsigned long tex2 = textures->loadTexture(RESOURCES"hubble1.jpg");
 //    unsigned long tex3 = textures->loadTexture(RESOURCES"ship.png");
 
-    int backgroundx = 0;
-    int backgroundy = 0;
+    float backgroundx = 0;
+    float backgroundy = 0;
     int camx = 0;
 	int camy = 0;
     int spritex = 0;
     int spritey=0;
     float scale = 1;
 
-    float texx,texy;
     sprite *testy = new sprite(RESOURCES"outline.png");
     sprite *tester = new sprite(RESOURCES"outline.png");
+
     testy->setPosition(0.0,0.0);
     tester->setPosition(501.0,501.0);
-//    testy->setSizeToTexture();
+
+
     testy->setSize(501,501);
-    tester->setSize(501,501);
+    tester->setSize(250,250);
+
     /* redundant, but testing */
     textures->selectTexture(RESOURCES"hubble1.jpg");
     textures->selectTexture(tex2);
-
-    texx = (float)xres/textures->current->xsize;
-    texy = (float)yres/textures->current->ysize;
 
     test.loadFromFile(RESOURCES"vertexshader.vert",
                       RESOURCES"fragmentshader.frag");
@@ -118,9 +113,9 @@ int main(int argc, char *argv[])
     test.linkShader();
     test.printLog(test.programObject);
 
-//    glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),tex);
+    glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),textures->loadTexture(RESOURCES"outline.png"));
 
-    glUniform1i(glGetUniformLocation(test.programObject,"texture"),GL_TEXTURE1);
+    tester->setShader(test.programObject);
 
     while(program_running)
     {
@@ -170,20 +165,20 @@ int main(int argc, char *argv[])
             }
 
             if(adown){
-                backgroundx-=3;
-                camx+=3;
+                backgroundx--;
+                camx++;
             }
             if(ddown){
-                camx-=3;
-                backgroundx+=3;
+                camx--;
+                backgroundx++;
             }
             if(wdown){
-                camy-=3;
-                backgroundy+=3;
+                camy--;
+                backgroundy++;
             }
             if(sdown) {
-                backgroundy-=3;
-                camy+=3;
+                backgroundy--;
+                camy++;
             }
             if(qdown)
                 scale-=0.005;
@@ -201,29 +196,20 @@ int main(int argc, char *argv[])
         }
 
         glEnable(GL_TEXTURE_2D);
+
         glBindTexture(GL_TEXTURE_2D, tex2);
         glPushMatrix();
-        glTranslatef(backgroundx/2, backgroundy/2, 0); //offload this to the shader? probably should
-        test.useShader(true);
+        glTranslatef((float)(backgroundx*0.1), (float)(backgroundy*0.1), 0); //offload this to the shader? probably should
         glBegin(GL_QUADS);
-//            glTexCoord2f(0,0); glVertex2d((-1*mapresx),(-1*mapresy));
-//            glTexCoord2f(1,0); glVertex2d(mapresx,(-1*mapresy));
-//            glTexCoord2f(1,1); glVertex2d(mapresx,mapresy);
-//            glTexCoord2f(0,1); glVertex2d((-1*mapresx),mapresy);
             glTexCoord2f(0,0); glVertex2d(0,0);
             glTexCoord2f(1,0); glVertex2d(mapresx,0);
             glTexCoord2f(1,1); glVertex2d(mapresx,mapresy);
             glTexCoord2f(0,1); glVertex2d(0,mapresy);
-//            glTexCoord2f(0,0); glVertex2d(0,0);
-//            glTexCoord2f(texx,0); glVertex2d(xres,0);
-//            glTexCoord2f(texx,texy); glVertex2d(xres,yres);
-//            glTexCoord2f(0,texy); glVertex2d(0,yres);
         glEnd();
         glPopMatrix();
-		test.useShader(false);
-		//test.useShader(true);
+
         testy->render();
-        //test.useShader(false);
+
         tester->setPosition(spritex,spritey);
         tester->render();
 
@@ -231,12 +217,8 @@ int main(int argc, char *argv[])
         glScalef(scale,scale,1);
         glTranslatef(camx,camy,0);
 
-       // glFlush();
-      //  glFinish();
         SDL_GL_SwapBuffers();
-
     }
     SDL_Quit();
-
     return 0;
 }

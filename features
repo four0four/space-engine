@@ -1,0 +1,8 @@
+---ONLY working features---
+
+- OpenGL 2D acceleration
+- GLSL Support: Any version, no limits as far as we know
+- Texture support: 2D textures only for now
+	- Crashes sometimes if the texture fails to load [known]
+- Rudimentary sprite engine
+- Automagic texture loading (freeimage libs) and mipmapping [make optional]

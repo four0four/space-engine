@@ -34,8 +34,11 @@ unsigned int textureList::loadTexture(std::string imagename)
 //    if(strcmp(current->filename,"first")) //If the list is empty, use the anchor
         current = current->next;
     current->next = NULL;
-    //strcpy(current->filename,imagename.c_str());
+#ifdef _Win32
 	strncpy_s(current->filename,imagename.c_str(),1024);
+#else
+    strcpy(current->filename,imagename.c_str());
+#endif
 
     unsigned int texture;
     FREE_IMAGE_FORMAT format;
@@ -205,7 +208,11 @@ textureList::textureList()
     current = bottom;
     top = NULL;
     current->next = NULL;
+#ifdef _Win32
     strncpy_s(bottom->filename,"first",6);
+#else
+    strncpy(bottom->filename,"first",6);
+#endif
 }
 
 textureList::~textureList()

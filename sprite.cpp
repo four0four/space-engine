@@ -9,8 +9,8 @@ sprite::sprite(std::string imagename)
     this->pivoty = 0;
     this->angle = 0;
     textures->selectTexture(this->texture);
-//    this->texwidth = textures->current->xsize;
-//    this->texheight = textures->current->ysize;
+    this->height = textures->current->ysize;
+    this->width = textures->current->xsize;
 }
 
 sprite::~sprite()
@@ -21,6 +21,12 @@ sprite::~sprite()
 void sprite::setTexture(std::string imagename)
 {
     this->texture = textures->loadTexture(imagename); //Add better error handling. Enough segfaults
+}
+
+void sprite::setShader(unsigned int toSet)
+{
+    this->spriteShader = toSet;
+    this->shaderUse = true;
 }
 
 void sprite::rotate(int degrees)
@@ -60,19 +66,17 @@ void sprite::setSize(int x, int y)
 
 void sprite::render()
 {
-//    texx = (float)this->xposition/this->texwidth;
-//    texy = (float)this->yposition/this->texheight;
-
     glBindTexture(GL_TEXTURE_2D,this->texture);
     glPushMatrix();
     glTranslatef(this->xposition,this->yposition,0);
-
+    glUseProgram(this->spriteShader);
     glBegin(GL_QUADS); //MAKE THIS BETTER
-    glTexCoord2f(0,0); glVertex2d(this->xposition,this->yposition);
-    glTexCoord2f(1,0); glVertex2d(this->xposition+this->width,this->yposition);
-    glTexCoord2f(1,1); glVertex2d(this->xposition+this->width,this->yposition+this->height);
-    glTexCoord2f(0,1); glVertex2d(this->xposition,this->yposition+this->height);
+        glTexCoord2f(0,0); glVertex2d(this->xposition,this->yposition);
+        glTexCoord2f(1,0); glVertex2d(this->xposition+this->width,this->yposition);
+        glTexCoord2f(1,1); glVertex2d(this->xposition+this->width,this->yposition+this->height);
+        glTexCoord2f(0,1); glVertex2d(this->xposition,this->yposition+this->height);
     glEnd();
+    glUseProgram(0);
     glPopMatrix();
 }
 
