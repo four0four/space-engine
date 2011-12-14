@@ -93,9 +93,9 @@ int main(int argc, char *argv[])
     float scale = 1;
 
     sprite *testy = new sprite(RESOURCES"outline.png");
-    sprite *tester = new sprite(RESOURCES"outline.png");
+    sprite *tester = new sprite(RESOURCES"ship.png");
 
-    testy->setPosition(0.0,0.0);
+    testy->setPosition(500.0,500.0);
     tester->setPosition(501.0,501.0);
 
 
@@ -112,10 +112,10 @@ int main(int argc, char *argv[])
     test.compileShader();
     test.linkShader();
     test.printLog(test.programObject);
-
-    glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),textures->loadTexture(RESOURCES"outline.png"));
+    glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),textures->loadTexture(RESOURCES"ship.png"));
 
     tester->setShader(test.programObject);
+    test.printLog(test.programObject);
 
     while(program_running)
     {
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
 
         glBindTexture(GL_TEXTURE_2D, tex2);
         glPushMatrix();
-        glTranslatef((float)(backgroundx*0.1), (float)(backgroundy*0.1), 0); //offload this to the shader? probably should
+        glTranslatef(backgroundx*0.1,backgroundy*0.1, 0); //offload this to the shader? probably should
         glBegin(GL_QUADS);
             glTexCoord2f(0,0); glVertex2d(0,0);
             glTexCoord2f(1,0); glVertex2d(mapresx,0);
