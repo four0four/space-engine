@@ -100,11 +100,12 @@ int main(int argc, char *argv[])
 
 
     testy->setSize(501,501);
+    testy->rotate(34);
     tester->setSize(250,250);
 
     /* redundant, but testing */
-    textures->selectTexture(RESOURCES"hubble1.jpg");
-    textures->selectTexture(tex2);
+    textures->selectTexture(RESOURCES"hubble1.jpg",0);
+    textures->selectTexture(tex2,0);
 
     test.loadFromFile(RESOURCES"vertexshader.vert",
                       RESOURCES"fragmentshader.frag");
@@ -112,7 +113,7 @@ int main(int argc, char *argv[])
     test.compileShader();
     test.linkShader();
     test.printLog(test.programObject);
-    glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),textures->loadTexture(RESOURCES"ship.png"));
+    glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),textures->selectTexture(RESOURCES"ship.png",true));
 
     tester->setShader(test.programObject);
     test.printLog(test.programObject);
@@ -126,6 +127,21 @@ int main(int argc, char *argv[])
         {
             while (SDL_PollEvent(&event))
             {
+				switch(event.type){
+				case SDL_VIDEORESIZE:
+					//surface = SDL_SetVideoMode(event.resize.w,event.resize.h,
+												//bpp,videoFlags);
+					if(!surface)
+					{
+						printf("Error resizing!\n");
+						program_running = false;
+					}
+					resizeWindow(event.resize.w,event.resize.h);
+					printf("w:%d h:%d\n",event.resize.w,event.resize.h);
+					break;
+				default:
+					break;
+				}
                 switch(event.key.keysym.sym){
                     case SDLK_w:
                         wdown = !wdown;

@@ -56,8 +56,8 @@ public:
     void unloadTexture(unsigned int texID);
     void forceUnloadTexture(std::string filename);
     void forceUnloadTexture(unsigned int texID);
-    void selectTexture(std::string filename);
-    void selectTexture(unsigned int texID);
+    unsigned int selectTexture(std::string filename, bool reserve);
+    unsigned int selectTexture(unsigned int texID, bool reserve);
     textureList();
     ~textureList();
 };

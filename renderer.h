@@ -9,5 +9,6 @@
 #define bpp 32
 
 void initGL();
+void resizeWindow(int w, int h);
 
 #endif // RENDERER_H

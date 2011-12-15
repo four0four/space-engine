@@ -37,7 +37,7 @@ unsigned int textureList::loadTexture(std::string imagename)
 #ifdef _Win32
 	strncpy_s(current->filename,imagename.c_str(),1024);
 #else
-    strcpy(current->filename,imagename.c_str());
+    strncpy(current->filename,imagename.c_str(),1024);
 #endif
 
     unsigned int texture;
@@ -162,7 +162,7 @@ void textureList::unloadTexture(unsigned int texID)
     return;
 }
 
-void textureList::selectTexture(std::string filename)
+unsigned int textureList::selectTexture(std::string filename, bool reserve)
 {
     bool found = 0;
     current = bottom;
@@ -178,11 +178,14 @@ void textureList::selectTexture(std::string filename)
     if(found == 0)
     {
         printf("ERROR: Texture %s not loaded\n - Unable to select\n",filename.c_str());
-        return;
+        return 0;
     }
+    if(reserve && found)
+        current->usages++;
+    return current->textureObject;
 }
 
-void textureList::selectTexture(unsigned int texID)
+unsigned int textureList::selectTexture(unsigned int texID, bool reserve)
 {
     bool found = 0;
     current = bottom;
@@ -198,8 +201,11 @@ void textureList::selectTexture(unsigned int texID)
     if(found == 0)
     {
         printf("ERROR: Texture %d not loaded\n - Unable to select\n",texID);
-        return;
+        return 0;
     }
+    if(reserve && found)
+        current->usages++;
+    return current->textureObject;
 }
 
 textureList::textureList()

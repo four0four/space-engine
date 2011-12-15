@@ -8,7 +8,7 @@ sprite::sprite(std::string imagename)
     this->pivotx = 0;
     this->pivoty = 0;
     this->angle = 0;
-    textures->selectTexture(this->texture);
+    textures->selectTexture(this->texture,0);
     this->height = textures->current->ysize;
     this->width = textures->current->xsize;
 }
@@ -53,7 +53,7 @@ void sprite::setPosition(double x, double y)
 
 void sprite::setSizeToTexture() //change to scaling?
 {
-    textures->selectTexture(this->texture);
+    textures->selectTexture(this->texture,0);
     this->width = textures->current->xsize;
     this->height = textures->current->ysize;
 }
@@ -69,6 +69,7 @@ void sprite::render()
     glBindTexture(GL_TEXTURE_2D,this->texture);
     glPushMatrix();
     glTranslatef(this->xposition,this->yposition,0);
+//    glRotated(this->angle,1,0,0);
     glUseProgram(this->spriteShader);
     glBegin(GL_QUADS); //MAKE THIS BETTER
         glTexCoord2f(0,0); glVertex2d(this->xposition,this->yposition);
