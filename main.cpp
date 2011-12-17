@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
             return 1;
     }
     initGL();
-
+	textures->init();
     /*
       HACK ALERT!
       move to init fxn (when created)
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 //    unsigned long tex = textures->loadTexture(RESOURCES"outline.png");
     unsigned long tex2 = textures->loadTexture(RESOURCES"hubble1.jpg");
 //    unsigned long tex3 = textures->loadTexture(RESOURCES"ship.png");
-
+	
     float backgroundx = 0;
     float backgroundy = 0;
     int camx = 0;
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
     sprite *testy = new sprite(RESOURCES"outline.png");
     sprite *tester = new sprite(RESOURCES"ship.png");
-
+	
     testy->setPosition(500.0,500.0);
     tester->setPosition(501.0,501.0);
 

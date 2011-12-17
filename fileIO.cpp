@@ -1,7 +1,5 @@
 #include "fileIO.h"
 
-
-
 unsigned int textureList::loadTexture(std::string imagename)
 {
     printf("INFO: Loading texture: %s\n",imagename.c_str());
@@ -34,7 +32,7 @@ unsigned int textureList::loadTexture(std::string imagename)
 //    if(strcmp(current->filename,"first")) //If the list is empty, use the anchor
         current = current->next;
     current->next = NULL;
-#ifdef _Win32
+#ifdef _WIN32
 	strncpy_s(current->filename,imagename.c_str(),1024);
 #else
     strncpy(current->filename,imagename.c_str(),1024);
@@ -45,8 +43,12 @@ unsigned int textureList::loadTexture(std::string imagename)
 
     if((format = FreeImage_GetFileType(imagename.c_str(),0)) == -1)
     {
-        printf("ERROR: Unable to load texture %s!\n",imagename.c_str()); //Set some flag?
-        return -1;
+        printf("ERROR: Unable to load texture %s!\n - Resorting to fallback.\n",imagename.c_str()); //Set some flag?
+		current->usages = 1;
+		current->textureObject = bottom->textureObject;
+		current->xsize = bottom->xsize;
+		current->ysize = bottom->ysize;
+		return this->bottom->textureObject;
     }
 
     FIBITMAP * imagedata = FreeImage_Load(format, imagename.c_str(),0);
@@ -85,6 +87,33 @@ unsigned int textureList::loadTexture(std::string imagename)
     current->ysize = height;
     current->xsize = width;
     return texture;
+}
+
+void textureList::init()
+{
+	unsigned int texture;
+
+	GLubyte *raw = new GLubyte[3*64*64]; //64x64, rgb
+
+	for(int i = 0; i < 64*64; i+=3)
+	{
+		raw[i] = 192;
+		raw[i+1] = 5;
+		raw[i+2] = 45;
+	}
+
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,64,64,0,GL_RGB,GL_UNSIGNED_BYTE,raw);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	this->bottom->textureObject = texture;
+	this->bottom->xsize = 64;
+	this->bottom->ysize = 64;
+	delete [] raw;
 }
 
 void textureList::unloadTexture(std::string filename)
@@ -214,7 +243,7 @@ textureList::textureList()
     current = bottom;
     top = NULL;
     current->next = NULL;
-#ifdef _Win32
+#ifdef _WIN32
     strncpy_s(bottom->filename,"first",6);
 #else
     strncpy(bottom->filename,"first",6);
