@@ -33,6 +33,7 @@ textureList *textures;
 
 int main(int argc, char *argv[])
 {
+    printf("LAUNCH: (%d args) %s\n",argc-1,*argv);
     int videoFlags;
     SDL_Surface *surface;
     SDL_Event event;
