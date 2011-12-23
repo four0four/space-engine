@@ -47,40 +47,75 @@ int shader::loadFromFile(std::string vertexShader, std::string fragmentShader)
 {
     ifstream vertexFile, fragmentFile;
     unsigned int counter;
-
+	bool failure = 0;
     vertexFile.open(vertexShader.c_str(), ifstream::in);
     fragmentFile.open(fragmentShader.c_str(), ifstream::in);
 
-    if(!vertexFile.good() || !fragmentFile.good()) //if either fails...
-        return -1;
+	char *fallbackVertex =
+		"#version 120\n"
+		"void main() {\n"
+		"gl_TexCoord[0] = gl_MultiTexCoord0;\n"
+		"gl_Position = ftransform();\n }\n";
+	char *fallbackFragment = 
+		"#version 120 \n"
+		"void main(void) {\n"
+		"gl_FragColor = vec4(1.0,1.0,0.0,1.0); \n}\n";
 
-    fragmentFileLength = getFileLength(fragmentFile);
-    vertexFileLength = getFileLength(vertexFile);
+    if(!vertexFile.good()) //bail out either way
+	{
+		printf("ERROR: Unable to load vertex shader %s!\n", 
+			vertexShader.c_str());
+		failure = 1;
+	}
+	if(!fragmentFile.good()) //yep
+	{
+		printf("ERROR: Unable to load fragment shader %s!\n",
+			fragmentShader.c_str());
+		failure = 1;
+	}
 
-    shader::fragmentSource = new GLchar[fragmentFileLength + 1];
-    shader::vertexSource = new GLchar[vertexFileLength + 1];
+	if(!failure)
+	{
+		fragmentFileLength = getFileLength(fragmentFile);
+		vertexFileLength = getFileLength(vertexFile);
 
-    if(!shader::fragmentSource || !shader::vertexSource) //new failed
-        return -1;
+		shader::fragmentSource = new GLchar[fragmentFileLength + 1];
+		shader::vertexSource = new GLchar[vertexFileLength + 1];
 
-    counter = 0;
-    while(vertexFile.good())
-    {
-        vertexSource[counter] = vertexFile.get();
-        counter++;
-    }
-    counter = 0;
-    while(fragmentFile.good())
-    {
-        fragmentSource[counter] = fragmentFile.get();
-        counter++;
-    }
-    //Null terminate those strings!
-    shader::fragmentSource[fragmentFileLength] = 0;
-    shader::vertexSource[vertexFileLength] = 0;
+		if(!shader::fragmentSource || !shader::vertexSource) //new failed
+			return -1; //Bad, fixme.
 
-    fragmentFile.close();
-    vertexFile.close();
+		counter = 0;
+		while(vertexFile.good())
+		{
+			vertexSource[counter] = vertexFile.get();
+			counter++;
+		}
+		counter = 0;
+		while(fragmentFile.good())
+		{
+			fragmentSource[counter] = fragmentFile.get();
+			counter++;
+		}
+		//Null terminate those strings!
+		shader::fragmentSource[fragmentFileLength] = 0;
+		shader::vertexSource[vertexFileLength] = 0;
+
+		fragmentFile.close();
+		vertexFile.close();
+	}
+	else //breakage, fallback!
+	{
+		printf(" - Resorting to fallback shaders.\n");
+	
+		shader::fragmentSource = new GLchar[strlen(fallbackFragment)];
+		shader::vertexSource = new GLchar[strlen(fallbackVertex)];
+
+		memcpy(fragmentSource,fallbackFragment,strlen(fallbackFragment)); //Probably should just use fallbackFragment...
+		memcpy(vertexSource,fallbackVertex,strlen(fallbackVertex));
+		shader::fragmentSource[strlen(fallbackFragment)] = 0;
+		shader::vertexSource[strlen(fallbackVertex)] = 0;
+	}
     shader::isLoaded = true;
 
     return 0;
@@ -133,8 +168,11 @@ void shader::useShader(bool use)
 
 void shader::deleteSources()
 {
-    delete [] vertexSource;
-    delete [] fragmentSource;
+	if(isLoaded)
+	{
+		delete [] vertexSource;
+		delete [] fragmentSource;
+	}
     isLoaded = false;
 }
 
@@ -154,10 +192,10 @@ shader::~shader()
     glDeleteShader(shader::fragmentObject);
     glDeleteProgram(shader::programObject);
 
-    if(isLoaded)
-    {
-        delete [] vertexSource;
-        delete [] fragmentSource;
-    }
+    //if(isLoaded) //WTF?
+    //{
+    //    delete [] vertexSource;
+    //    delete [] fragmentSource;
+    //}
     isLoaded = false;
 }

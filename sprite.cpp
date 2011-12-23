@@ -15,7 +15,7 @@ sprite::sprite(std::string imagename)
 
 sprite::~sprite()
 {
-    //this->FUCK SHIT UP
+
 }
 
 void sprite::setTexture(std::string imagename)

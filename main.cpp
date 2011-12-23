@@ -213,10 +213,10 @@ int main(int argc, char *argv[])
         }
 
         glEnable(GL_TEXTURE_2D);
-
+		//test.useShader(true);
         glBindTexture(GL_TEXTURE_2D, tex2);
         glPushMatrix();
-        glTranslatef(backgroundx*0.1,backgroundy*0.1, 0); //offload this to the shader? probably should
+        glTranslatef(backgroundx*0.4,backgroundy*0.4, 0); //offload this to the shader? probably should
         glBegin(GL_QUADS);
             glTexCoord2f(0,0); glVertex2d(0,0);
             glTexCoord2f(1,0); glVertex2d(mapresx,0);
@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
             glTexCoord2f(0,1); glVertex2d(0,mapresy);
         glEnd();
         glPopMatrix();
-
+		//test.useShader(false);
         testy->render();
 
         tester->setPosition(spritex,spritey);

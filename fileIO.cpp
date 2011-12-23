@@ -93,9 +93,9 @@ void textureList::init()
 {
 	unsigned int texture;
 
-	GLubyte *raw = new GLubyte[3*64*64]; //64x64, rgb
+	GLubyte *raw = new GLubyte[3*64*64*2]; //64x64, rgb
 
-	for(int i = 0; i < 64*64; i+=3)
+	for(int i = 0; i < 64*64*3; i+=3)
 	{
 		raw[i] = 192;
 		raw[i+1] = 5;
@@ -109,7 +109,7 @@ void textureList::init()
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 	this->bottom->textureObject = texture;
 	this->bottom->xsize = 64;
 	this->bottom->ysize = 64;
