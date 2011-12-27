@@ -28,7 +28,7 @@ unsigned int textureList::loadTexture(std::string imagename)
         current = current->next;
 
     current->next = new textureNode;
-    //For now, leave the anchor alone -- Change to cpp vectors?
+    //For now, leave the anchor alone (is the fallback tex) -- Change to cpp vectors?
 //    if(strcmp(current->filename,"first")) //If the list is empty, use the anchor
         current = current->next;
     current->next = NULL;
@@ -43,7 +43,7 @@ unsigned int textureList::loadTexture(std::string imagename)
 
     if((format = FreeImage_GetFileType(imagename.c_str(),0)) == -1)
     {
-        printf("ERROR: Unable to load texture %s!\n - Resorting to fallback.\n",imagename.c_str()); //Set some flag?
+        printf(" - ERROR: Unable to load texture %s!\n  -> Resorting to fallback...\n",imagename.c_str()); //Set some flag?
 		current->usages = 1;
 		current->textureObject = bottom->textureObject;
 		current->xsize = bottom->xsize;
@@ -105,8 +105,9 @@ void textureList::init()
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,64,64,0,GL_RGB,GL_UNSIGNED_BYTE,raw);
-
 	glGenerateMipmap(GL_TEXTURE_2D);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -125,7 +126,6 @@ void textureList::unloadTexture(std::string filename)
     {
         if(!(strcmp(filename.c_str(),current->filename)))
         {
-            printf("!found!\n");
             found = 1;
             break;
         }
@@ -207,7 +207,8 @@ unsigned int textureList::selectTexture(std::string filename, bool reserve)
     if(found == 0)
     {
         printf("ERROR: Texture %s not loaded\n - Unable to select\n",filename.c_str());
-        return 0;
+        current = bottom;
+        return current->textureObject;
     }
     if(reserve && found)
         current->usages++;
@@ -230,7 +231,8 @@ unsigned int textureList::selectTexture(unsigned int texID, bool reserve)
     if(found == 0)
     {
         printf("ERROR: Texture %d not loaded\n - Unable to select\n",texID);
-        return 0;
+        current = bottom;
+        return current->textureObject;
     }
     if(reserve && found)
         current->usages++;
