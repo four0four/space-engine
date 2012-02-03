@@ -28,7 +28,7 @@ unsigned int textureList::loadTexture(std::string imagename)
         current = current->next;
 
     current->next = new textureNode;
-    //For now, leave the anchor alone (is the fallback tex) -- Change to cpp vectors?
+    //For now, leave the anchor alone -- Change to cpp vectors?
 //    if(strcmp(current->filename,"first")) //If the list is empty, use the anchor
         current = current->next;
     current->next = NULL;
@@ -43,7 +43,7 @@ unsigned int textureList::loadTexture(std::string imagename)
 
     if((format = FreeImage_GetFileType(imagename.c_str(),0)) == -1)
     {
-        printf(" - ERROR: Unable to load texture %s!\n  -> Resorting to fallback...\n",imagename.c_str()); //Set some flag?
+        printf("ERROR: Unable to load texture %s!\n - Resorting to fallback.\n",imagename.c_str()); //Set some flag?
 		current->usages = 1;
 		current->textureObject = bottom->textureObject;
 		current->xsize = bottom->xsize;
@@ -89,6 +89,33 @@ unsigned int textureList::loadTexture(std::string imagename)
     return texture;
 }
 
+void textureList::init()
+{
+	unsigned int texture;
+
+    GLubyte *raw = new GLubyte[3*64*64]; //64x64, rgb
+
+	for(int i = 0; i < 64*64*3; i+=3)
+	{
+		raw[i] = 192;
+		raw[i+1] = 5;
+		raw[i+2] = 45;
+	}
+	this->bottom->usages = 1; //never tested
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,64,64,0,GL_RGB,GL_UNSIGNED_BYTE,raw);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	this->bottom->textureObject = texture;
+	this->bottom->xsize = 64;
+	this->bottom->ysize = 64;
+	delete [] raw;
+}
+
 void textureList::unloadTexture(std::string filename)
 {
     char found = 0;
@@ -98,6 +125,7 @@ void textureList::unloadTexture(std::string filename)
     {
         if(!(strcmp(filename.c_str(),current->filename)))
         {
+            printf("!found!\n");
             found = 1;
             break;
         }
@@ -179,8 +207,7 @@ unsigned int textureList::selectTexture(std::string filename, bool reserve)
     if(found == 0)
     {
         printf("ERROR: Texture %s not loaded\n - Unable to select\n",filename.c_str());
-        current = bottom;
-        return current->textureObject;
+        return 0;
     }
     if(reserve && found)
         current->usages++;
@@ -203,8 +230,7 @@ unsigned int textureList::selectTexture(unsigned int texID, bool reserve)
     if(found == 0)
     {
         printf("ERROR: Texture %d not loaded\n - Unable to select\n",texID);
-        current = bottom;
-        return current->textureObject;
+        return 0;
     }
     if(reserve && found)
         current->usages++;
@@ -213,43 +239,17 @@ unsigned int textureList::selectTexture(unsigned int texID, bool reserve)
 
 textureList::textureList()
 {
-    unsigned int texture;
-    GLubyte *raw = new GLubyte[3*64*64*2];
-    /*
-      what the hell chrys.
-      why does this work?
-      that is not 64x64...
-    */
-    this->bottom = new textureNode;
-    this->current = this->bottom;
-    this->top = NULL;
-    this->current->next = NULL;
+    bottom = new textureNode;
+    current = bottom;
+    top = NULL;
+    current->next = NULL;
 #ifdef _WIN32
     strncpy_s(bottom->filename,"first",6);
 #else
     strncpy(bottom->filename,"first",6);
 #endif
-    /* generate the fallback */
-    for(int i = 0; i < 64*64*3; i+=3)
-    {
-        raw[i] = 192;
-        raw[i+1] = 5;
-        raw[i+2] = 45;
-    }
 
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,64,64,0,GL_RGB,GL_UNSIGNED_BYTE,raw);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-    this->current->textureObject = texture;
-    this->current->xsize = 64;
-    this->current->ysize = 64;
-    delete [] raw;
+	//this->init();
 }
 
 textureList::~textureList()

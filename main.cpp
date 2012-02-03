@@ -33,7 +33,7 @@ textureList *textures;
 
 int main(int argc, char *argv[])
 {
-    printf("LAUNCH: (%d args) %s\n",argc-1,*argv); //Not that useful but it makes the compile shut up
+    printf("LAUNCH: (%d args) %s\n",argc-1,*argv);
     int videoFlags;
     SDL_Surface *surface;
     SDL_Event event;
@@ -92,6 +92,10 @@ int main(int argc, char *argv[])
     int spritex = 0;
     int spritey=0;
     float scale = 1;
+    static unsigned int frames = 0;
+    static unsigned int ti = 0;
+    static unsigned int tf;
+    static float seconds, fps;
 
     sprite *testy = new sprite(RESOURCES"outline.png");
     sprite *tester = new sprite(RESOURCES"ship.png");
@@ -123,7 +127,7 @@ int main(int argc, char *argv[])
     {
         // Grab events - Setting vars prevents unnecessary polling later
         // Also - Split this into input.cpp or something later
-    ticks = SDL_GetTicks();
+        ticks = SDL_GetTicks();
         if (ticks%20) //every 20ms, update)
         {
             while (SDL_PollEvent(&event))
@@ -212,6 +216,17 @@ int main(int argc, char *argv[])
 
         }
 
+        frames++;
+        {
+            tf = SDL_GetTicks();
+            if (tf - ti >= 1500) {
+                seconds = (tf - ti) / 1000.0;
+                fps = frames / seconds;
+                printf("%d frames in %g seconds = %g FPS\n", frames, seconds, fps);
+                ti = tf;
+                frames = 0;
+            }
+        }
         glEnable(GL_TEXTURE_2D);
 		//test.useShader(true);
         glBindTexture(GL_TEXTURE_2D, tex2);

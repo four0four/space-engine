@@ -61,7 +61,6 @@ DIST          = /usr/share/qt/mkspecs/common/unix.conf \
 		/usr/share/qt/mkspecs/common/g++-unix.conf \
 		/usr/share/qt/mkspecs/qconfig.pri \
 		/usr/share/qt/mkspecs/modules/qt_phonon.pri \
-		/usr/share/qt/mkspecs/modules/qt_webkit_version.pri \
 		/usr/share/qt/mkspecs/features/qt_functions.prf \
 		/usr/share/qt/mkspecs/features/qt_config.prf \
 		/usr/share/qt/mkspecs/features/exclusive_builds.prf \
@@ -121,7 +120,6 @@ Makefile: devtest.pro  /usr/share/qt/mkspecs/linux-g++/qmake.conf /usr/share/qt/
 		/usr/share/qt/mkspecs/common/g++-unix.conf \
 		/usr/share/qt/mkspecs/qconfig.pri \
 		/usr/share/qt/mkspecs/modules/qt_phonon.pri \
-		/usr/share/qt/mkspecs/modules/qt_webkit_version.pri \
 		/usr/share/qt/mkspecs/features/qt_functions.prf \
 		/usr/share/qt/mkspecs/features/qt_config.prf \
 		/usr/share/qt/mkspecs/features/exclusive_builds.prf \
@@ -150,7 +148,6 @@ Makefile: devtest.pro  /usr/share/qt/mkspecs/linux-g++/qmake.conf /usr/share/qt/
 /usr/share/qt/mkspecs/common/g++-unix.conf:
 /usr/share/qt/mkspecs/qconfig.pri:
 /usr/share/qt/mkspecs/modules/qt_phonon.pri:
-/usr/share/qt/mkspecs/modules/qt_webkit_version.pri:
 /usr/share/qt/mkspecs/features/qt_functions.prf:
 /usr/share/qt/mkspecs/features/qt_config.prf:
 /usr/share/qt/mkspecs/features/exclusive_builds.prf:

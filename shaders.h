@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 //#include <string> //Why don't we need this? whatever...
 #include <fstream>
-#include <memory> //Do not remember including this. Needed?
+#include <memory>
 #include <string.h>
 
 class shader
