@@ -13,31 +13,41 @@
 #include "shaders.h"
 #include "sprite.h"
 
+#define VERSION "devtest"
 #define RESOURCES "resources/"
-
-//Bad, bad globals...temporary until engine class
-
-bool program_running = 1;
-
-bool wdown, adown, sdown, ddown, qdown, edown,
-        leftdown,rightdown,updown,downdown;
-
-unsigned int ticks;
-
-shader test;
-textureList *textures;
-
 #define mapresx 6000
 #define mapresy 2906
 
+//Bad, bad globals...temporary until engine class
+shader test;
+textureList *textures;
+unsigned int ticks;
+bool program_running = 1;
+bool wdown, adown, sdown, ddown, qdown, edown,
+        leftdown,rightdown,updown,downdown;
 
 int main(int argc, char *argv[])
 {
-    printf("LAUNCH: (%d args) %s\n",argc-1,*argv);
-    int videoFlags;
-    SDL_Surface *surface;
+	float backgroundx = 0;
+    float backgroundy = 0;
+    int camx = 0;
+	int camy = 0;
+    int spritex = 0;
+    int spritey=0;
+    float scale = 1;
+    static unsigned int frames = 0;
+    static unsigned int ti = 0;
+    static unsigned int tf;
+    static float seconds, fps;
+	unsigned long tex2;
+	int videoFlags;
+
+	SDL_Surface *surface;
     SDL_Event event;
-    textures = new textureList;
+	sprite *testy;
+	sprite *tester;
+
+    printf("LAUNCH: (%d args) %s\n",argc-1,*argv);
 
     /* initialize SDL */
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -52,54 +62,27 @@ int main(int argc, char *argv[])
     videoFlags |= SDL_HWPALETTE;       /* Store the palette in hardware */
     videoFlags |= SDL_RESIZABLE;       /* Enable window resizing */
 
-
-    SDL_WM_SetCaption("devtest", NULL);
-
-    /* get a SDL surface */
-    surface = SDL_SetVideoMode(xres, yres, bpp,
-                                videoFlags);
+    /* get an SDL surface */
+    surface = SDL_SetVideoMode(xres, yres, bpp, videoFlags);
     if (!surface)
     {
             printf("Fatal: Video mode set failed with: %s\n", SDL_GetError());
             return 1;
     }
+
+	SDL_WM_SetCaption(VERSION, NULL);
     initGL();
-	textures->init();
-    /*
-      HACK ALERT!
-      move to init fxn (when created)
-	  make windows like it
-    */
-   /* char *filepath;
-    std::string runningdir;
-    long size;
-    size = pathconf(".", _PC_PATH_MAX);
-    filepath = new char[size];
-    getcwd(filepath, (size_t)size);
-    runningdir = filepath;
-    delete [] filepath;
-    printf("LOG: launch dir: %s\n",runningdir.c_str()); */
+	textures = new textureList;
 
-    /* it's much faster to store these in seperate vars */
-//    unsigned long tex = textures->loadTexture(RESOURCES"outline.png");
-    unsigned long tex2 = textures->loadTexture(RESOURCES"hubble1.jpg");
-//    unsigned long tex3 = textures->loadTexture(RESOURCES"ship.png");
+	/* load us some resources!
+		- it's much faster to store these in seperate vars */
+//  tex = textures->loadTexture(RESOURCES"outline.png");
+//  tex3 = textures->loadTexture(RESOURCES"ship.png");
+    tex2 = textures->loadTexture(RESOURCES"hubble1.jpg");
+    testy = new sprite(RESOURCES"outline.png");
+    tester = new sprite(RESOURCES"ship.png");
 	
-    float backgroundx = 0;
-    float backgroundy = 0;
-    int camx = 0;
-	int camy = 0;
-    int spritex = 0;
-    int spritey=0;
-    float scale = 1;
-    static unsigned int frames = 0;
-    static unsigned int ti = 0;
-    static unsigned int tf;
-    static float seconds, fps;
-
-    sprite *testy = new sprite(RESOURCES"outline.png");
-    sprite *tester = new sprite(RESOURCES"ship.png");
-	
+	/* positions! */
     testy->setPosition(500.0,500.0);
     tester->setPosition(501.0,501.0);
 
@@ -112,16 +95,23 @@ int main(int argc, char *argv[])
     textures->selectTexture(RESOURCES"hubble1.jpg",0);
     textures->selectTexture(tex2,0);
 
+	/* load the shader sources */
     test.loadFromFile(RESOURCES"vertexshader.vert",
                       RESOURCES"fragmentshader.frag");
-
+	/* prepare the shader */
     test.compileShader();
     test.linkShader();
     test.printLog(test.programObject);
+
+	/* [TODO] assign the texture unit to the shader */
     glUniform1i(glGetUniformLocation(test.programObject,"bgl_RenderedTexture"),textures->selectTexture(RESOURCES"ship.png",true));
 
+	/* assign the finished shader to a sprite */
     tester->setShader(test.programObject);
-    test.printLog(test.programObject);
+
+	/* and we're done! */
+	printf("INFO: Entering main loop at %d ms.\n\n",SDL_GetTicks());
+
 
     while(program_running)
     {
@@ -221,7 +211,7 @@ int main(int argc, char *argv[])
             tf = SDL_GetTicks();
             if (tf - ti >= 1500) {
                 seconds = (tf - ti) / 1000.0;
-                fps = frames / seconds;
+                fps = frames/seconds;
                 printf("%d frames in %g seconds = %g FPS\n", frames, seconds, fps);
                 ti = tf;
                 frames = 0;

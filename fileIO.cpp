@@ -89,33 +89,6 @@ unsigned int textureList::loadTexture(std::string imagename)
     return texture;
 }
 
-void textureList::init()
-{
-	unsigned int texture;
-
-    GLubyte *raw = new GLubyte[3*64*64]; //64x64, rgb
-
-	for(int i = 0; i < 64*64*3; i+=3)
-	{
-		raw[i] = 192;
-		raw[i+1] = 5;
-		raw[i+2] = 45;
-	}
-	this->bottom->usages = 1; //never tested
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,64,64,0,GL_RGB,GL_UNSIGNED_BYTE,raw);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-	this->bottom->textureObject = texture;
-	this->bottom->xsize = 64;
-	this->bottom->ysize = 64;
-	delete [] raw;
-}
-
 void textureList::unloadTexture(std::string filename)
 {
     char found = 0;
@@ -239,17 +212,40 @@ unsigned int textureList::selectTexture(unsigned int texID, bool reserve)
 
 textureList::textureList()
 {
+	unsigned int texture;
+	GLubyte *raw;
+
     bottom = new textureNode;
     current = bottom;
     top = NULL;
     current->next = NULL;
+	raw = new GLubyte[3*64*64]; //64x64, rgb
+
 #ifdef _WIN32
     strncpy_s(bottom->filename,"first",6);
 #else
     strncpy(bottom->filename,"first",6);
 #endif
 
-	//this->init();
+	for(int i = 0; i < 64*64*3; i+=3)
+	{
+		raw[i] = 192;
+		raw[i+1] = 5;
+		raw[i+2] = 45;
+	}
+
+	this->bottom->usages = 1; //never tested
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,64,64,0,GL_RGB,GL_UNSIGNED_BYTE,raw);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	this->bottom->textureObject = texture;
+	this->bottom->xsize = 64;
+	this->bottom->ysize = 64;
+	delete [] raw;
 }
 
 textureList::~textureList()
