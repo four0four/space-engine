@@ -4,7 +4,7 @@ unsigned int textureList::loadTexture(std::string imagename)
 {
     printf("INFO: Loading texture: %s\n",imagename.c_str());
 
-    if(imagename.size() > 1023) //fix this later
+    if(imagename.size() > 1023) //FIXME
     {
         printf("stop overflowing!\n");
         return -1;
@@ -29,8 +29,7 @@ unsigned int textureList::loadTexture(std::string imagename)
 
     current->next = new textureNode;
     //For now, leave the anchor alone -- Change to cpp vectors?
-//    if(strcmp(current->filename,"first")) //If the list is empty, use the anchor
-        current = current->next;
+    current = current->next;
     current->next = NULL;
 #ifdef _WIN32
 	strncpy_s(current->filename,imagename.c_str(),1024);
@@ -98,7 +97,6 @@ void textureList::unloadTexture(std::string filename)
     {
         if(!(strcmp(filename.c_str(),current->filename)))
         {
-            printf("!found!\n");
             found = 1;
             break;
         }

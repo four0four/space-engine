@@ -10,3 +10,7 @@
 *.lai
 *.la
 *.a
+
+# Bigass files
+
+*.jpg #texture(s) - some are already there, and thats fine
